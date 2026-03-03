@@ -51,16 +51,10 @@ public class TransactionController {
     @GetMapping
     @Operation(summary = "List transactions with pagination",
                description = "Migrated from COTRN00C. Page size = 10 (same as original). " +
-                             "Optionally filter by starting transaction ID or card/account.")
+                             "Optionally filter by starting transaction ID.")
     public ResponseEntity<ApiResponse<Page<Transaction>>> listTransactions(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) String startTranId,
-            @RequestParam(required = false) String cardNum,
-            @RequestParam(required = false) String acctId) {
-        if (cardNum != null && !cardNum.isBlank()) {
-            List<Transaction> list = transactionService.getTransactionsByCardNumber(cardNum);
-            return ResponseEntity.ok(ApiResponse.ok("Transactions retrieved", null));
-        }
+            @RequestParam(required = false) String startTranId) {
         Page<Transaction> result;
         if (startTranId != null && !startTranId.isBlank()) {
             result = transactionService.listTransactionsFrom(startTranId, page);
