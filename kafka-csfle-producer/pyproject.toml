@@ -1,0 +1,35 @@
+[project]
+name = "kafka-csfle-producer"
+version = "1.0.0"
+description = "Python Kafka producer with Client-Side Field Level Encryption (CSFLE)"
+requires-python = ">=3.10"
+dependencies = [
+    "confluent-kafka>=2.3.0",
+    "cryptography>=42.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
