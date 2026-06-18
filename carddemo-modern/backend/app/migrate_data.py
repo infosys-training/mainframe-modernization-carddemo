@@ -32,7 +32,10 @@ from app.models.models import (
 )
 from app.services.auth import hash_password
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "app" / "data" / "ASCII"
+DATA_DIR = Path(os.environ.get(
+    "CARDDEMO_DATA_DIR",
+    str(Path(__file__).resolve().parent.parent.parent.parent / "app" / "data" / "ASCII"),
+))
 
 # COBOL overpunch decoding
 OVERPUNCH_POS = {"{": 0, "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "I": 9}

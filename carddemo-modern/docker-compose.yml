@@ -27,11 +27,13 @@ services:
     environment:
       DATABASE_URL: postgresql://carddemo:carddemo@db:5432/carddemo
       SECRET_KEY: carddemo-secret-key-change-in-production
+      CARDDEMO_DATA_DIR: /data/ASCII
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./backend:/app
+      - ../app/data/ASCII:/data/ASCII:ro
     command: >
       sh -c "python -m app.migrate_data && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
