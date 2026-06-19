@@ -1,0 +1,23 @@
+package com.carddemo.card.repository;
+
+import com.carddemo.common.entity.Card;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface CardRepository extends JpaRepository<Card, String> {
+
+    List<Card> findByAccountId(String accountId);
+
+    Page<Card> findByAccountId(String accountId, Pageable pageable);
+
+    List<Card> findByActiveStatus(String activeStatus);
+
+    @Query("SELECT c FROM Card c WHERE c.accountId = :accountId AND c.activeStatus = 'Y'")
+    List<Card> findActiveCardsByAccountId(String accountId);
+}
