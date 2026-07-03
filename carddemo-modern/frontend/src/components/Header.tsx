@@ -1,8 +1,14 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, IconButton } from "@mui/material";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { DRAWER_WIDTH } from "./Sidebar";
 
-export default function Header() {
+interface HeaderProps {
+  onMenuToggle: () => void;
+}
+
+export default function Header({ onMenuToggle }: HeaderProps) {
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -12,14 +18,33 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="fixed"
+      sx={{
+        width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+        ml: { md: `${DRAWER_WIDTH}px` },
+      }}
+    >
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, cursor: "pointer" }} onClick={() => navigate("/")}>
+        <IconButton
+          color="inherit"
+          edge="start"
+          onClick={onMenuToggle}
+          sx={{ mr: 2, display: { md: "none" } }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography
+          variant="h6"
+          noWrap
+          sx={{ flexGrow: 1, cursor: "pointer" }}
+          onClick={() => navigate("/")}
+        >
           CardDemo
         </Typography>
         {user && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ display: { xs: "none", sm: "block" } }}>
               {user.user_id} ({isAdmin ? "Admin" : "User"})
             </Typography>
             <Button color="inherit" onClick={handleLogout}>

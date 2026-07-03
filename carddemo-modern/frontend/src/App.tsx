@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { CssBaseline, Box } from "@mui/material";
+import { CssBaseline, Box, Toolbar } from "@mui/material";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
-import NavBar from "./components/NavBar";
+import Sidebar, { DRAWER_WIDTH } from "./components/Sidebar";
 
 import Login from "./pages/Login";
 import MainMenu from "./pages/MainMenu";
@@ -24,12 +25,25 @@ import Billing from "./pages/Billing";
 
 function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+
   return (
-    <Box>
-      <Header />
-      <NavBar />
-      <Outlet />
+    <Box sx={{ display: "flex" }}>
+      <Header onMenuToggle={() => setMobileOpen((prev) => !prev)} />
+      <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+        }}
+      >
+        <Toolbar />
+        <Outlet />
+      </Box>
     </Box>
   );
 }
