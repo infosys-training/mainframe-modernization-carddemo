@@ -60,7 +60,7 @@ export default function TransactionList() {
                 <TableCell>{txn.tran_desc}</TableCell>
                 <TableCell align="right">${Number(txn.tran_amt).toFixed(2)}</TableCell>
                 <TableCell>{txn.card_num}</TableCell>
-                <TableCell>{txn.orig_ts ? new Date(txn.orig_ts).toLocaleDateString() : "N/A"}</TableCell>
+                <TableCell>{txn.orig_ts ? new Date(txn.orig_ts).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "N/A"}</TableCell>
               </TableRow>
             ))}
           </TableBody>

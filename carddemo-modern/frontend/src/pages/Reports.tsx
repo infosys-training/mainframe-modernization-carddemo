@@ -74,7 +74,7 @@ export default function Reports() {
         <>
           <Typography variant="h6">{report.report_name}</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {report.start_date} to {report.end_date} | {report.record_count} records | Total: ${Number(report.total_amount).toFixed(2)}
+            {new Date(report.start_date + "T00:00").toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })} to {new Date(report.end_date + "T00:00").toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })} | {report.record_count} records | Total: ${Number(report.total_amount).toFixed(2)}
           </Typography>
           <TableContainer component={Paper}>
             <Table size="small">
@@ -98,7 +98,7 @@ export default function Reports() {
                     <TableCell>{item.tran_cat_cd}-{item.tran_cat_desc}</TableCell>
                     <TableCell>{item.tran_source}</TableCell>
                     <TableCell align="right">${Number(item.tran_amt).toFixed(2)}</TableCell>
-                    <TableCell>{item.orig_ts ? new Date(item.orig_ts).toLocaleDateString() : "N/A"}</TableCell>
+                    <TableCell>{item.orig_ts ? new Date(item.orig_ts).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "N/A"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

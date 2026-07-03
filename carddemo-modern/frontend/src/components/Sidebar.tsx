@@ -6,8 +6,10 @@ import {
   ListItemText,
   Toolbar,
   Box,
+  Collapse,
   useMediaQuery,
   useTheme,
+  Paper,
 } from "@mui/material";
 import {
   AccountBalance,
@@ -66,71 +68,106 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     if (!isDesktop) onClose();
   };
 
-  const drawerContent = (
-    <Box sx={{ overflow: "auto" }}>
-      <Toolbar />
-      <List>
-        {visibleItems.map((item) => (
-          <ListItemButton
-            key={item.path}
-            selected={isActive(item.path)}
-            onClick={() => handleNav(item.path)}
-            sx={{
-              borderRadius: 1,
-              mx: 1,
-              mb: 0.5,
-              "&.Mui-selected": {
-                bgcolor: "primary.main",
-                color: "primary.contrastText",
-                "&:hover": { bgcolor: "primary.dark" },
-                "& .MuiListItemIcon-root": { color: "primary.contrastText" },
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItemButton>
-        ))}
-      </List>
-    </Box>
+  const menuList = (
+    <List disablePadding>
+      {visibleItems.map((item) => (
+        <ListItemButton
+          key={item.path}
+          selected={isActive(item.path)}
+          onClick={() => handleNav(item.path)}
+          sx={{
+            borderRadius: 1,
+            mx: 1,
+            mb: 0.5,
+            py: 1,
+            "&.Mui-selected": {
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              "&:hover": { bgcolor: "primary.dark" },
+              "& .MuiListItemIcon-root": { color: "primary.contrastText" },
+            },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
+          <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: 14 }} />
+        </ListItemButton>
+      ))}
+    </List>
   );
 
   return (
-    <Box
-      component="nav"
-      sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}
-    >
-      {/* Mobile drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={onClose}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: DRAWER_WIDTH },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
+    <>
+      {/* Mobile: compact dropdown that animates top-to-down */}
+      {!isDesktop && (
+        <Collapse
+          in={mobileOpen}
+          timeout={300}
+          sx={{
+            position: "fixed",
+            top: 56,
+            left: 0,
+            right: 0,
+            zIndex: theme.zIndex.appBar - 1,
+          }}
+        >
+          <Paper
+            elevation={4}
+            sx={{
+              borderRadius: 0,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+              py: 1,
+              maxHeight: "70vh",
+              overflow: "auto",
+            }}
+          >
+            {menuList}
+          </Paper>
+        </Collapse>
+      )}
 
-      {/* Desktop drawer */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", md: "block" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: DRAWER_WIDTH,
-            borderRight: "1px solid",
-            borderColor: "divider",
-          },
-        }}
-        open
-      >
-        {drawerContent}
-      </Drawer>
-    </Box>
+      {/* Mobile backdrop */}
+      {!isDesktop && mobileOpen && (
+        <Box
+          onClick={onClose}
+          sx={{
+            position: "fixed",
+            top: 56,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: theme.zIndex.appBar - 2,
+            bgcolor: "rgba(0,0,0,0.3)",
+          }}
+        />
+      )}
+
+      {/* Desktop: permanent sidebar */}
+      {isDesktop && (
+        <Box
+          component="nav"
+          sx={{ width: DRAWER_WIDTH, flexShrink: 0 }}
+        >
+          <Drawer
+            variant="permanent"
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: DRAWER_WIDTH,
+                borderRight: "1px solid",
+                borderColor: "divider",
+              },
+            }}
+            open
+          >
+            <Toolbar />
+            <Box sx={{ overflow: "auto", pt: 1 }}>
+              {menuList}
+            </Box>
+          </Drawer>
+        </Box>
+      )}
+    </>
   );
 }
 
