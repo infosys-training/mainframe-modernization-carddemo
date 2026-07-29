@@ -71,9 +71,9 @@ export default function AccountView() {
       <ErrorMessage message={error} onClose={() => setError(null)} />
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
         sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
           mb: 2,
           pb: 1.5,
           borderBottom: "3px solid",

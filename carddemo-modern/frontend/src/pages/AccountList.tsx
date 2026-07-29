@@ -46,9 +46,9 @@ export default function AccountList() {
     <Box sx={{ p: 3 }}>
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
         sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
           mb: 2,
           pb: 1.5,
           borderBottom: "3px solid",
