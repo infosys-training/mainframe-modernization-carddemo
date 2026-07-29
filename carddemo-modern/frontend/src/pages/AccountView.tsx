@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
-  Card,
-  CardContent,
+  Paper,
   Typography,
   Button,
   CircularProgress,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
+  Stack,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
 import { getAccount } from "../services/api";
 import ErrorMessage from "../components/ErrorMessage";
 
@@ -29,6 +27,8 @@ interface Account {
   addr_zip: string;
   group_id: string;
 }
+
+const money = (v: string) => `$${Number(v).toFixed(2)}`;
 
 export default function AccountView() {
   const { id } = useParams<{ id: string }>();
@@ -49,35 +49,87 @@ export default function AccountView() {
 
   if (loading) return <Box sx={{ p: 3, textAlign: "center" }}><CircularProgress /></Box>;
 
+  const rows: [string, string][] = account
+    ? [
+        ["Account ID", String(account.acct_id)],
+        ["Status", account.active_status === "Y" ? "Active" : "Inactive"],
+        ["Current Balance", money(account.curr_bal)],
+        ["Credit Limit", money(account.credit_limit)],
+        ["Cash Credit Limit", money(account.cash_credit_limit)],
+        ["Open Date", account.open_date || "N/A"],
+        ["Expiration Date", account.expiration_date || "N/A"],
+        ["Reissue Date", account.reissue_date || "N/A"],
+        ["Cycle Credits", money(account.curr_cyc_credit)],
+        ["Cycle Debits", money(account.curr_cyc_debit)],
+        ["ZIP Code", account.addr_zip || "N/A"],
+        ["Group ID", account.group_id || "N/A"],
+      ]
+    : [];
+
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, maxWidth: 900, mx: "auto" }}>
       <ErrorMessage message={error} onClose={() => setError(null)} />
-      <Typography variant="h5" gutterBottom>Account Details</Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{
+          mb: 2,
+          pb: 1.5,
+          borderBottom: "3px solid",
+          borderBottomColor: "primary.main",
+        }}
+      >
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/accounts")}
+        >
+          Back
+        </Button>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 700, color: "primary.main" }}
+        >
+          Account Details
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<EditIcon />}
+          onClick={() => navigate(`/accounts/${id}/edit`)}
+        >
+          Edit
+        </Button>
+      </Stack>
       {account && (
-        <Card>
-          <CardContent>
-            <Table>
-              <TableBody>
-                <TableRow><TableCell>Account ID</TableCell><TableCell>{account.acct_id}</TableCell></TableRow>
-                <TableRow><TableCell>Status</TableCell><TableCell>{account.active_status === "Y" ? "Active" : "Inactive"}</TableCell></TableRow>
-                <TableRow><TableCell>Current Balance</TableCell><TableCell>${Number(account.curr_bal).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell>Credit Limit</TableCell><TableCell>${Number(account.credit_limit).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell>Cash Credit Limit</TableCell><TableCell>${Number(account.cash_credit_limit).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell>Open Date</TableCell><TableCell>{account.open_date || "N/A"}</TableCell></TableRow>
-                <TableRow><TableCell>Expiration Date</TableCell><TableCell>{account.expiration_date || "N/A"}</TableCell></TableRow>
-                <TableRow><TableCell>Reissue Date</TableCell><TableCell>{account.reissue_date || "N/A"}</TableCell></TableRow>
-                <TableRow><TableCell>Cycle Credits</TableCell><TableCell>${Number(account.curr_cyc_credit).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell>Cycle Debits</TableCell><TableCell>${Number(account.curr_cyc_debit).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell>ZIP Code</TableCell><TableCell>{account.addr_zip}</TableCell></TableRow>
-                <TableRow><TableCell>Group ID</TableCell><TableCell>{account.group_id}</TableCell></TableRow>
-              </TableBody>
-            </Table>
-            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-              <Button variant="contained" onClick={() => navigate(`/accounts/${id}/edit`)}>Edit</Button>
-              <Button variant="outlined" onClick={() => navigate("/accounts")}>Back to List</Button>
-            </Box>
-          </CardContent>
-        </Card>
+        <Paper elevation={1} sx={{ borderRadius: 2, overflow: "hidden" }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+            }}
+          >
+            {rows.map(([label, value], i) => (
+              <Box
+                key={label}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 2,
+                  px: 2,
+                  py: 1.25,
+                  bgcolor: i % 2 === 0 ? "grey.50" : "background.paper",
+                }}
+              >
+                <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                  {label}
+                </Typography>
+                <Typography variant="body2" sx={{ textAlign: "right" }}>
+                  {value}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Paper>
       )}
     </Box>
   );

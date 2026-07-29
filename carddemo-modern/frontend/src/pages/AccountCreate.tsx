@@ -96,7 +96,7 @@ export default function AccountCreate() {
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, bgcolor: "grey.50" }}>
         <form onSubmit={handleSubmit}>
           <Box sx={gridSx}>
             <TextField

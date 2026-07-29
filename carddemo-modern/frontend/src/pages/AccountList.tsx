@@ -65,7 +65,7 @@ export default function AccountList() {
           variant="contained"
           onClick={() => navigate("/accounts/new")}
         >
-          Add Account
+          + Account
         </Button>
       </Stack>
       <TableContainer component={Paper}>
