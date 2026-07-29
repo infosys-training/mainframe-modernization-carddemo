@@ -23,11 +23,26 @@ docker-compose up --build
 
 ### Option B — local scripts
 
+**macOS / Linux** (bash):
+
 ```bash
 cd carddemo-modern
 ./setup.sh     # first time only: installs deps, starts PostgreSQL, loads seed data
 ./run.sh       # starts backend + frontend (Ctrl-C to stop)
 ```
+
+**Windows** (cmd or double-click):
+
+```bat
+cd carddemo-modern
+setup.bat      REM first time only: installs deps, starts PostgreSQL, loads seed data
+run.bat        REM opens backend + frontend each in its own window
+```
+
+> On Windows the `.sh` files won't run in cmd/PowerShell — use the `.bat`
+> scripts. (If you prefer bash, the `.sh` scripts also work under Git Bash or
+> WSL.) All scripts use Docker only for PostgreSQL; set `DATABASE_URL` first to
+> point at an existing database and the Docker DB step is skipped.
 
 Then open:
 
@@ -93,7 +108,7 @@ carddemo-modern/
 ├── backend/    # FastAPI app, SQLAlchemy models, batch services, seed migration
 ├── frontend/   # React (Vite + TS + MUI) pages mapping 1:1 to BMS maps
 ├── database/   # schema.sql
-├── setup.sh    # first-time local setup
-├── run.sh       # start backend + frontend
+├── setup.sh / setup.bat   # first-time local setup (macOS-Linux / Windows)
+├── run.sh / run.bat       # start backend + frontend (macOS-Linux / Windows)
 └── docker-compose.yml
 ```
