@@ -13,6 +13,8 @@ import {
   Button,
   Stack,
   Pagination,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 import { getAccounts } from "../services/api";
 import { formatDate } from "../utils/date";
@@ -28,9 +30,9 @@ interface Account {
 export default function AccountList() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
-  const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function AccountList() {
       const count = Number(res.headers["x-total-count"]);
       if (!Number.isNaN(count)) setTotal(count);
     });
-  }, [page]);
+  }, [page, pageSize]);
 
   const headCellSx = {
     fontWeight: 700,
@@ -108,7 +110,31 @@ export default function AccountList() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+      <Box
+        sx={{
+          mt: 2,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <TextField
+          select
+          size="small"
+          label="Rows per page"
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPage(1);
+          }}
+          sx={{ width: 150 }}
+        >
+          {[10, 15, 20, 50, 100].map((n) => (
+            <MenuItem key={n} value={n}>{n}</MenuItem>
+          ))}
+        </TextField>
         <Pagination
           count={totalPages}
           page={page}

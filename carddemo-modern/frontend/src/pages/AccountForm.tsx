@@ -143,7 +143,10 @@ export default function AccountForm({ mode }: Props) {
     display: "grid",
     gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
     columnGap: 2,
-    rowGap: 2,
+    rowGap: 2.5,
+    // Darker, bolder field labels.
+    "& .MuiInputLabel-root": { color: "text.primary", fontWeight: 600 },
+    "& .MuiInputLabel-root.Mui-disabled": { color: "text.secondary" },
   };
 
   // Make disabled fields visibly disabled (greyed input + not-allowed cursor).
@@ -180,7 +183,7 @@ export default function AccountForm({ mode }: Props) {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, bgcolor: "background.paper" }}>
+      <Paper elevation={0} sx={{ p: 0, bgcolor: "background.paper" }}>
         <form onSubmit={handleSubmit}>
           <Box sx={gridSx}>
             <TextField
