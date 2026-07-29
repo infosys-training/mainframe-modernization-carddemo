@@ -11,7 +11,9 @@ import {
   Paper,
   Typography,
   Button,
+  Stack,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { getAccounts } from "../services/api";
 import PaginationControls from "../components/PaginationControls";
 
@@ -33,24 +35,60 @@ export default function AccountList() {
     getAccounts(page, pageSize).then((res) => setAccounts(res.data));
   }, [page]);
 
+  const headCellSx = {
+    fontWeight: 700,
+    color: "grey.900",
+    bgcolor: "grey.200",
+    borderBottom: "2px solid",
+    borderBottomColor: "grey.400",
+  };
+
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>Accounts</Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{
+          mb: 2,
+          pb: 1.5,
+          borderBottom: "3px solid",
+          borderBottomColor: "primary.main",
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 700, letterSpacing: "-0.5px", color: "primary.main" }}
+        >
+          Accounts
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("/accounts/new")}
+        >
+          Add Account
+        </Button>
+      </Stack>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Account ID</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Balance</TableCell>
-              <TableCell align="right">Credit Limit</TableCell>
-              <TableCell>Open Date</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={headCellSx}>Account ID</TableCell>
+              <TableCell sx={headCellSx}>Status</TableCell>
+              <TableCell sx={headCellSx} align="right">Balance</TableCell>
+              <TableCell sx={headCellSx} align="right">Credit Limit</TableCell>
+              <TableCell sx={headCellSx}>Open Date</TableCell>
+              <TableCell sx={headCellSx}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {accounts.map((acct) => (
-              <TableRow key={acct.acct_id} hover>
+              <TableRow
+                key={acct.acct_id}
+                hover
+                sx={{ "&:nth-of-type(odd)": { bgcolor: "grey.50" } }}
+              >
                 <TableCell>{acct.acct_id}</TableCell>
                 <TableCell>{acct.active_status === "Y" ? "Active" : "Inactive"}</TableCell>
                 <TableCell align="right">${Number(acct.curr_bal).toFixed(2)}</TableCell>

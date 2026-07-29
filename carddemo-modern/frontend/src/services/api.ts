@@ -38,6 +38,9 @@ export const getAccounts = (page = 1, pageSize = 20) =>
 
 export const getAccount = (id: number) => api.get(`/api/accounts/${id}`);
 
+export const createAccount = (data: Record<string, unknown>) =>
+  api.post("/api/accounts", data);
+
 export const updateAccount = (id: number, data: Record<string, unknown>) =>
   api.put(`/api/accounts/${id}`, data);
 

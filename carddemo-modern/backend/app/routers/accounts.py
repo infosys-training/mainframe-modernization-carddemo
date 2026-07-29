@@ -5,10 +5,29 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.models import Account
-from app.schemas.schemas import AccountResponse, AccountUpdate
+from app.schemas.schemas import AccountCreate, AccountResponse, AccountUpdate
 from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/api/accounts", tags=["accounts"])
+
+
+@router.post("", response_model=AccountResponse, status_code=status.HTTP_201_CREATED)
+def create_account(
+    data: AccountCreate,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    existing = db.query(Account).filter(Account.acct_id == data.acct_id).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Account {data.acct_id} already exists",
+        )
+    account = Account(**data.model_dump())
+    db.add(account)
+    db.commit()
+    db.refresh(account)
+    return account
 
 
 @router.get("", response_model=list[AccountResponse])
