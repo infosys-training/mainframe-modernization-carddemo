@@ -29,11 +29,27 @@ export default function AccountCreate() {
     group_id: "",
   });
 
+  const today = new Date().toISOString().slice(0, 10);
+
+  const validate = (): string | null => {
+    if (!form.acct_id.trim()) return "Account ID is required";
+    if (form.open_date && form.expiration_date) {
+      if (form.expiration_date <= form.open_date) {
+        return "Expiration date must be after the open date";
+      }
+    }
+    if (form.expiration_date && form.expiration_date <= today) {
+      return "Expiration date must be a future date";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!form.acct_id.trim()) {
-      setError("Account ID is required");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
     setSaving(true);
@@ -62,48 +78,73 @@ export default function AccountCreate() {
     }
   };
 
+  const set = (field: keyof typeof form) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => setForm({ ...form, [field]: e.target.value });
+
+  const gridSx = {
+    display: "grid",
+    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+    columnGap: 2,
+    rowGap: 2,
+  };
+
   return (
-    <Box sx={{ p: 3, maxWidth: 640 }}>
+    <Box sx={{ p: 3, maxWidth: 720, mx: "auto" }}>
       <Typography variant="h5" fontWeight={700} gutterBottom>
         Add Account
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      <Paper sx={{ p: 3 }}>
+      <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            required
-            label="Account ID"
-            type="number"
-            value={form.acct_id}
-            onChange={(e) => setForm({ ...form, acct_id: e.target.value })}
-            margin="normal"
-            helperText="Unique 11-digit account identifier"
-          />
-          <TextField
-            select
-            fullWidth
-            label="Status"
-            value={form.active_status}
-            onChange={(e) => setForm({ ...form, active_status: e.target.value })}
-            margin="normal"
-          >
-            <MenuItem value="Y">Active</MenuItem>
-            <MenuItem value="N">Inactive</MenuItem>
-          </TextField>
-          <TextField fullWidth label="Current Balance" type="number" value={form.curr_bal} onChange={(e) => setForm({ ...form, curr_bal: e.target.value })} margin="normal" />
-          <TextField fullWidth label="Credit Limit" type="number" value={form.credit_limit} onChange={(e) => setForm({ ...form, credit_limit: e.target.value })} margin="normal" />
-          <TextField fullWidth label="Cash Credit Limit" type="number" value={form.cash_credit_limit} onChange={(e) => setForm({ ...form, cash_credit_limit: e.target.value })} margin="normal" />
-          <TextField fullWidth label="Open Date" type="date" value={form.open_date} onChange={(e) => setForm({ ...form, open_date: e.target.value })} margin="normal" slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField fullWidth label="Expiration Date" type="date" value={form.expiration_date} onChange={(e) => setForm({ ...form, expiration_date: e.target.value })} margin="normal" slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField fullWidth label="ZIP Code" value={form.addr_zip} onChange={(e) => setForm({ ...form, addr_zip: e.target.value })} margin="normal" inputProps={{ maxLength: 10 }} />
-          <TextField fullWidth label="Group ID" value={form.group_id} onChange={(e) => setForm({ ...form, group_id: e.target.value })} margin="normal" inputProps={{ maxLength: 10 }} />
-          <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+          <Box sx={gridSx}>
+            <TextField
+              required
+              size="small"
+              label="Account ID"
+              type="number"
+              value={form.acct_id}
+              onChange={set("acct_id")}
+              helperText="Unique 11-digit account identifier"
+            />
+            <TextField
+              select
+              size="small"
+              label="Status"
+              value={form.active_status}
+              onChange={set("active_status")}
+            >
+              <MenuItem value="Y">Active</MenuItem>
+              <MenuItem value="N">Inactive</MenuItem>
+            </TextField>
+            <TextField size="small" label="Current Balance" type="number" value={form.curr_bal} onChange={set("curr_bal")} />
+            <TextField size="small" label="Credit Limit" type="number" value={form.credit_limit} onChange={set("credit_limit")} />
+            <TextField size="small" label="Cash Credit Limit" type="number" value={form.cash_credit_limit} onChange={set("cash_credit_limit")} />
+            <TextField size="small" label="Group ID" value={form.group_id} onChange={set("group_id")} inputProps={{ maxLength: 10 }} />
+            <TextField
+              size="small"
+              label="Open Date"
+              type="date"
+              value={form.open_date}
+              onChange={set("open_date")}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <TextField
+              size="small"
+              label="Expiration Date"
+              type="date"
+              value={form.expiration_date}
+              onChange={set("expiration_date")}
+              slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: form.open_date || today } }}
+            />
+            <TextField size="small" label="ZIP Code" value={form.addr_zip} onChange={set("addr_zip")} inputProps={{ maxLength: 10 }} />
+          </Box>
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 1 }}>
+            <Button variant="outlined" onClick={() => navigate("/accounts")}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={saving}>
               {saving ? "Saving..." : "Save"}
             </Button>
-            <Button variant="outlined" onClick={() => navigate("/accounts")}>Cancel</Button>
           </Box>
         </form>
       </Paper>

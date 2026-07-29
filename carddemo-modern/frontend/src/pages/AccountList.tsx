@@ -13,7 +13,6 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import { getAccounts } from "../services/api";
 import PaginationControls from "../components/PaginationControls";
 
@@ -64,7 +63,6 @@ export default function AccountList() {
         </Typography>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={() => navigate("/accounts/new")}
         >
           Add Account

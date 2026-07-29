@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 # --- Auth ---
@@ -97,6 +97,15 @@ class AccountBase(BaseModel):
 
 class AccountCreate(AccountBase):
     acct_id: int
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> "AccountCreate":
+        if self.open_date and self.expiration_date:
+            if self.expiration_date <= self.open_date:
+                raise ValueError("Expiration date must be after the open date")
+        if self.expiration_date and self.expiration_date <= date.today():
+            raise ValueError("Expiration date must be a future date")
+        return self
 
 
 class AccountUpdate(BaseModel):
