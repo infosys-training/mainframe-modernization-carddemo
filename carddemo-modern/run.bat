@@ -13,18 +13,24 @@ setlocal enableextensions
 cd /d "%~dp0"
 set "ROOT=%cd%"
 
-if not defined DATABASE_URL set "DATABASE_URL=postgresql://carddemo:carddemo@localhost:5432/carddemo"
+if defined DATABASE_URL (
+  set "DB_PROVIDED=1"
+) else (
+  set "DATABASE_URL=postgresql://carddemo:carddemo@localhost:5432/carddemo"
+)
 
 if not exist "%ROOT%\backend\.venv\Scripts\uvicorn.exe" (
   echo ERROR: backend venv not found. Run setup.bat first.
   exit /b 1
 )
 
-REM Ensure PostgreSQL is running.
-where docker >nul 2>&1
-if not errorlevel 1 (
-  echo ==^> Ensuring PostgreSQL is up ^(docker compose service 'db'^)
-  docker compose up -d db
+REM Ensure PostgreSQL is running (only when using the Docker database).
+if not defined DB_PROVIDED (
+  where docker >nul 2>&1
+  if not errorlevel 1 (
+    echo ==^> Ensuring PostgreSQL is up ^(docker compose service 'db'^)
+    docker compose up -d db
+  )
 )
 
 echo ==^> Starting backend on http://localhost:8000

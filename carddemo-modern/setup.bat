@@ -14,7 +14,12 @@ setlocal enableextensions
 cd /d "%~dp0"
 set "ROOT=%cd%"
 
-if not defined DATABASE_URL set "DATABASE_URL=postgresql://carddemo:carddemo@localhost:5432/carddemo"
+REM Remember whether the caller supplied DATABASE_URL (then skip Docker), else default.
+if defined DATABASE_URL (
+  set "DB_PROVIDED=1"
+) else (
+  set "DATABASE_URL=postgresql://carddemo:carddemo@localhost:5432/carddemo"
+)
 
 echo ==^> CardDemo Modern - first-time setup
 
@@ -31,12 +36,18 @@ if errorlevel 1 (
 )
 
 REM --- PostgreSQL ----------------------------------------------------------
-if defined DATABASE_URL_PROVIDED (
+if defined DB_PROVIDED (
   echo ==^> Using provided DATABASE_URL, skipping Docker database
 ) else (
   where docker >nul 2>&1
   if errorlevel 1 (
-    echo !!  Docker not found. Start PostgreSQL yourself, set DATABASE_URL, and re-run.
+    echo !!  Docker Desktop was not found on your PATH.
+    echo     Choose ONE of the following, then re-run setup.bat:
+    echo       1^) Install Docker Desktop ^(https://www.docker.com/products/docker-desktop/^),
+    echo          start it, and re-run setup.bat.
+    echo       2^) Use your own PostgreSQL: create a database, then run e.g.
+    echo          set "DATABASE_URL=postgresql://USER:PASS@localhost:5432/carddemo"
+    echo          setup.bat
     exit /b 1
   )
   echo ==^> Starting PostgreSQL ^(docker compose service 'db'^)
