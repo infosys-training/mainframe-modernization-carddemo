@@ -60,7 +60,6 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainMenu />} />
-        <Route path="/admin" element={<AdminMenu />} />
         <Route path="/accounts" element={<AccountList />} />
         <Route path="/accounts/new" element={<AccountForm mode="new" />} />
         <Route path="/accounts/:id" element={<AccountView />} />
@@ -73,6 +72,7 @@ function AppRoutes() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/billing" element={<Billing />} />
         <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminMenu />} />
           <Route path="/users" element={<UserList />} />
           <Route path="/users/add" element={<UserAdd />} />
           <Route path="/users/:userId/edit" element={<UserUpdate />} />
