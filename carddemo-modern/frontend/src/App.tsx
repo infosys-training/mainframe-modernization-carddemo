@@ -9,9 +9,8 @@ import Login from "./pages/Login";
 import MainMenu from "./pages/MainMenu";
 import AdminMenu from "./pages/AdminMenu";
 import AccountList from "./pages/AccountList";
-import AccountCreate from "./pages/AccountCreate";
+import AccountForm from "./pages/AccountForm";
 import AccountView from "./pages/AccountView";
-import AccountUpdate from "./pages/AccountUpdate";
 import CardList from "./pages/CardList";
 import CardSelect from "./pages/CardSelect";
 import CardUpdate from "./pages/CardUpdate";
@@ -63,9 +62,9 @@ function AppRoutes() {
         <Route path="/" element={<MainMenu />} />
         <Route path="/admin" element={<AdminMenu />} />
         <Route path="/accounts" element={<AccountList />} />
-        <Route path="/accounts/new" element={<AccountCreate />} />
+        <Route path="/accounts/new" element={<AccountForm mode="new" />} />
         <Route path="/accounts/:id" element={<AccountView />} />
-        <Route path="/accounts/:id/edit" element={<AccountUpdate />} />
+        <Route path="/accounts/:id/edit" element={<AccountForm mode="edit" />} />
         <Route path="/cards" element={<CardList />} />
         <Route path="/cards/:cardNum" element={<CardSelect />} />
         <Route path="/cards/:cardNum/edit" element={<CardUpdate />} />

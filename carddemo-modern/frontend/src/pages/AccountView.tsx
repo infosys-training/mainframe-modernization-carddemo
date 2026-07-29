@@ -8,7 +8,6 @@ import {
   CircularProgress,
   Stack,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import { getAccount } from "../services/api";
 import ErrorMessage from "../components/ErrorMessage";
@@ -30,12 +29,43 @@ interface Account {
 
 const money = (v: string) => `$${Number(v).toFixed(2)}`;
 
+const ROW_H = 44;
+
+function StripedRows({ rows }: { rows: [string, string][] }) {
+  return (
+    <Box>
+      {rows.map(([label, value], i) => (
+        <Box
+          key={label}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+            px: 2,
+            height: ROW_H,
+            bgcolor: i % 2 === 0 ? "grey.50" : "background.paper",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary" fontWeight={600}>
+            {label}
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: "right" }}>
+            {value}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 export default function AccountView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -49,13 +79,18 @@ export default function AccountView() {
 
   if (loading) return <Box sx={{ p: 3, textAlign: "center" }}><CircularProgress /></Box>;
 
-  const rows: [string, string][] = account
+  const primary: [string, string][] = account
     ? [
         ["Account ID", String(account.acct_id)],
         ["Status", account.active_status === "Y" ? "Active" : "Inactive"],
         ["Current Balance", money(account.curr_bal)],
         ["Credit Limit", money(account.credit_limit)],
         ["Cash Credit Limit", money(account.cash_credit_limit)],
+      ]
+    : [];
+
+  const details: [string, string][] = account
+    ? [
         ["Open Date", account.open_date || "N/A"],
         ["Expiration Date", account.expiration_date || "N/A"],
         ["Reissue Date", account.reissue_date || "N/A"],
@@ -66,8 +101,11 @@ export default function AccountView() {
       ]
     : [];
 
+  // Card height sized to the taller (back) face so the flip doesn't clip.
+  const cardHeight = details.length * ROW_H + 56;
+
   return (
-    <Box sx={{ p: 3, maxWidth: 900, mx: "auto" }}>
+    <Box sx={{ p: 3, maxWidth: 720, mx: "auto" }}>
       <ErrorMessage message={error} onClose={() => setError(null)} />
       <Stack
         direction="row"
@@ -80,16 +118,8 @@ export default function AccountView() {
           borderBottomColor: "primary.main",
         }}
       >
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/accounts")}
-        >
-          Back
-        </Button>
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: 700, color: "primary.main" }}
-        >
+        <Button onClick={() => navigate("/accounts")}>&lt;&nbsp;&nbsp;Back</Button>
+        <Typography variant="h5" sx={{ fontWeight: 700, color: "primary.main" }}>
           Account Details
         </Typography>
         <Button
@@ -100,36 +130,62 @@ export default function AccountView() {
           Edit
         </Button>
       </Stack>
+
       {account && (
-        <Paper elevation={1} sx={{ borderRadius: 2, overflow: "hidden" }}>
+        <Box sx={{ perspective: "1800px" }}>
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              position: "relative",
+              height: cardHeight,
+              transformStyle: "preserve-3d",
+              transition: "transform 0.6s",
+              transform: flipped ? "rotateY(180deg)" : "none",
             }}
           >
-            {rows.map(([label, value], i) => (
-              <Box
-                key={label}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: 2,
-                  px: 2,
-                  py: 1.25,
-                  bgcolor: i % 2 === 0 ? "grey.50" : "background.paper",
-                }}
-              >
-                <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                  {label}
-                </Typography>
-                <Typography variant="body2" sx={{ textAlign: "right" }}>
-                  {value}
-                </Typography>
+            {/* Front — key details */}
+            <Paper
+              elevation={1}
+              sx={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: 2,
+                overflow: "hidden",
+                backfaceVisibility: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <StripedRows rows={primary} />
+              <Box sx={{ mt: "auto", p: 1.5, display: "flex", justifyContent: "center" }}>
+                <Button size="small" onClick={() => setFlipped(true)}>
+                  More details
+                </Button>
               </Box>
-            ))}
+            </Paper>
+
+            {/* Back — all remaining details */}
+            <Paper
+              elevation={1}
+              sx={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: 2,
+                overflow: "hidden",
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <StripedRows rows={details} />
+              <Box sx={{ mt: "auto", p: 1.5, display: "flex", justifyContent: "center" }}>
+                <Button size="small" onClick={() => setFlipped(false)}>
+                  Less details
+                </Button>
+              </Box>
+            </Paper>
           </Box>
-        </Paper>
+        </Box>
       )}
     </Box>
   );
