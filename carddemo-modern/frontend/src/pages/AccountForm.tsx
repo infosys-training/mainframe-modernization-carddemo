@@ -146,6 +146,17 @@ export default function AccountForm({ mode }: Props) {
     rowGap: 2,
   };
 
+  // Make disabled fields visibly disabled (greyed input + not-allowed cursor).
+  const disabledSx = {
+    "& .MuiInputBase-root.Mui-disabled": { bgcolor: "grey.100" },
+    "& .Mui-disabled": { cursor: "not-allowed" },
+    "& .MuiInputBase-input.Mui-disabled": {
+      cursor: "not-allowed",
+      WebkitTextFillColor: "rgba(0, 0, 0, 0.55)",
+    },
+  };
+  const fieldSx = (field: string) => (disabled(field) ? disabledSx : undefined);
+
   return (
     <Box sx={{ p: 3, maxWidth: 720, mx: "auto" }}>
       <Stack
@@ -169,18 +180,18 @@ export default function AccountForm({ mode }: Props) {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, bgcolor: "grey.50" }}>
+      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, bgcolor: "background.paper" }}>
         <form onSubmit={handleSubmit}>
           <Box sx={gridSx}>
             <TextField
               required={!isEdit}
               disabled={disabled("acct_id")}
+              sx={fieldSx("acct_id")}
               size="small"
               label="Account ID"
               type="number"
               value={form.acct_id}
               onChange={set("acct_id")}
-              helperText={isEdit ? "Cannot be changed" : "Unique 11-digit account identifier"}
             />
             <TextField
               select
@@ -192,7 +203,7 @@ export default function AccountForm({ mode }: Props) {
               <MenuItem value="Y">Active</MenuItem>
               <MenuItem value="N">Inactive</MenuItem>
             </TextField>
-            <TextField size="small" label="Current Balance" type="number" value={form.curr_bal} onChange={set("curr_bal")} disabled={disabled("curr_bal")} helperText={isEdit ? "System-maintained" : undefined} />
+            <TextField size="small" label="Current Balance" type="number" value={form.curr_bal} onChange={set("curr_bal")} disabled={disabled("curr_bal")} sx={fieldSx("curr_bal")} />
             <TextField size="small" label="Credit Limit" type="number" value={form.credit_limit} onChange={set("credit_limit")} />
             <TextField size="small" label="Cash Credit Limit" type="number" value={form.cash_credit_limit} onChange={set("cash_credit_limit")} />
             <TextField size="small" label="Group ID" value={form.group_id} onChange={set("group_id")} inputProps={{ maxLength: 10 }} />
@@ -203,6 +214,7 @@ export default function AccountForm({ mode }: Props) {
               value={form.open_date}
               onChange={set("open_date")}
               disabled={disabled("open_date")}
+              sx={fieldSx("open_date")}
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
