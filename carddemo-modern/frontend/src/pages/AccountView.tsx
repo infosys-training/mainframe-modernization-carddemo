@@ -11,6 +11,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import { getAccount } from "../services/api";
 import ErrorMessage from "../components/ErrorMessage";
+import { formatDate } from "../utils/date";
 
 interface Account {
   acct_id: number;
@@ -91,9 +92,9 @@ export default function AccountView() {
 
   const details: [string, string][] = account
     ? [
-        ["Open Date", account.open_date || "N/A"],
-        ["Expiration Date", account.expiration_date || "N/A"],
-        ["Reissue Date", account.reissue_date || "N/A"],
+        ["Open Date", formatDate(account.open_date)],
+        ["Expiration Date", formatDate(account.expiration_date)],
+        ["Reissue Date", formatDate(account.reissue_date)],
         ["Cycle Credits", money(account.curr_cyc_credit)],
         ["Cycle Debits", money(account.curr_cyc_debit)],
         ["ZIP Code", account.addr_zip || "N/A"],

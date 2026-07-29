@@ -1,6 +1,6 @@
 """Account router replacing COACTVWC.cbl (view) and COACTUPC.cbl (update)."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -32,6 +32,7 @@ def create_account(
 
 @router.get("", response_model=list[AccountResponse])
 def list_accounts(
+    response: Response,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     active_only: bool = Query(False),
@@ -41,9 +42,11 @@ def list_accounts(
     query = db.query(Account)
     if active_only:
         query = query.filter(Account.active_status == "Y")
+    total = query.count()
     query = query.order_by(Account.acct_id)
     offset = (page - 1) * page_size
     accounts = query.offset(offset).limit(page_size).all()
+    response.headers["X-Total-Count"] = str(total)
     return accounts
 
 

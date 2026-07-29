@@ -12,9 +12,10 @@ import {
   Typography,
   Button,
   Stack,
+  Pagination,
 } from "@mui/material";
 import { getAccounts } from "../services/api";
-import PaginationControls from "../components/PaginationControls";
+import { formatDate } from "../utils/date";
 
 interface Account {
   acct_id: number;
@@ -27,11 +28,17 @@ interface Account {
 export default function AccountList() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
-  const pageSize = 20;
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   useEffect(() => {
-    getAccounts(page, pageSize).then((res) => setAccounts(res.data));
+    getAccounts(page, pageSize).then((res) => {
+      setAccounts(res.data);
+      const count = Number(res.headers["x-total-count"]);
+      if (!Number.isNaN(count)) setTotal(count);
+    });
   }, [page]);
 
   const headCellSx = {
@@ -91,7 +98,7 @@ export default function AccountList() {
                 <TableCell>{acct.active_status === "Y" ? "Active" : "Inactive"}</TableCell>
                 <TableCell align="right">${Number(acct.curr_bal).toFixed(2)}</TableCell>
                 <TableCell align="right">${Number(acct.credit_limit).toFixed(2)}</TableCell>
-                <TableCell>{acct.open_date || "N/A"}</TableCell>
+                <TableCell>{formatDate(acct.open_date)}</TableCell>
                 <TableCell>
                   <Button size="small" onClick={() => navigate(`/accounts/${acct.acct_id}`)}>View</Button>
                   <Button size="small" onClick={() => navigate(`/accounts/${acct.acct_id}/edit`)}>Edit</Button>
@@ -101,12 +108,19 @@ export default function AccountList() {
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationControls
-        page={page}
-        hasMore={accounts.length === pageSize}
-        onPrev={() => setPage((p) => Math.max(1, p - 1))}
-        onNext={() => setPage((p) => p + 1)}
-      />
+      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(_, p) => setPage(p)}
+          color="primary"
+          shape="rounded"
+          showFirstButton
+          showLastButton
+          siblingCount={1}
+          boundaryCount={1}
+        />
+      </Box>
     </Box>
   );
 }
